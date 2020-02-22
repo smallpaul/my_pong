@@ -1,22 +1,22 @@
 import pygame
 from pygame.locals import *
 from config import *
-from human_controls import HumanInput
+from human_controls import HumanPlayer1, HumanPlayer2
 from hardcoded_ai import HardcodedAi
 import random
 import math
 
 
 class App:
-    def __init__(self):
+    def __init__(self, player_one, player_two):
         self._running = True
         self.display_surf = None
         self._image_surf = None
         self.left_paddle = pygame.Rect((LEFT_GUY_X, STARTING_POSITION_Y), (PADDLE_WIDTH, PADDLE_HEIGHT))
         self.right_paddle = pygame.Rect((RIGHT_GUY_X, STARTING_POSITION_Y), (PADDLE_WIDTH, PADDLE_HEIGHT))
         self.ball = pygame.Rect((GAME_HEIGHT/2, GAME_WIDTH/2), BALL_SIZE)
-        self.player_one = HumanInput()
-        self.player_two = HardcodedAi()
+        self.player_one = player_one
+        self.player_two = player_two
         self.system_clock = pygame.time.Clock()
         self.ball_velocity = [0, 0]
 
@@ -111,5 +111,7 @@ class App:
 
 
 if __name__ == "__main__":
-    theApp = App()
+    player_one = HumanPlayer1()
+    player_two = HardcodedAi()
+    theApp = App(player_one=player_one, player_two=player_two)
     theApp.on_execute()
