@@ -27,7 +27,7 @@ class App:
         self.ball_velocity = [math.cos(ball_direction) * BALL_SPEED, math.sin(ball_direction) * BALL_SPEED]
 
     def ball_paddle_redirect(self, paddle: pygame.Rect):
-        collision_vet = [self.ball.center[0] - paddle.center[0], self.ball.center[0] - paddle.center[0]]
+        collision_vet = [self.ball.center[0] - paddle.center[0], self.ball.center[1] - paddle.center[1]]
         collision_angle = math.atan2(collision_vet[1], collision_vet[0])
         self.ball_velocity = [math.cos(collision_angle) * BALL_SPEED, math.sin(collision_angle) * BALL_SPEED]
 
