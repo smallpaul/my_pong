@@ -19,6 +19,15 @@ class App:
         self.player_two = player_two
         self.system_clock = pygame.time.Clock()
         self.ball_velocity = [0, 0]
+        self.score = [0, 0]
+        self.text_obj = None
+
+    def on_init(self):
+        pygame.init()
+        self.display_surf = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
+        self.text_obj = pygame.font.Font('font_file.ttf', 100)
+        self.randomise_ball_vel()
+        return True
 
     def randomise_ball_vel(self):
         ball_direction = (random.random() * (math.pi/2)) - math.pi/4
@@ -30,12 +39,6 @@ class App:
         collision_vet = [self.ball.center[0] - paddle.center[0], self.ball.center[1] - paddle.center[1]]
         collision_angle = math.atan2(collision_vet[1], collision_vet[0])
         self.ball_velocity = [math.cos(collision_angle) * BALL_SPEED, math.sin(collision_angle) * BALL_SPEED]
-
-    def on_init(self):
-        pygame.init()
-        self.display_surf = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
-        self.randomise_ball_vel()
-        return True
 
     def on_event(self, event):
         if event.type == QUIT:
@@ -80,7 +83,12 @@ class App:
         elif self.ball.colliderect(self.right_paddle):
             self.ball_paddle_redirect(self.right_paddle)
 
-        if self.ball.left < 0 or self.ball.right > GAME_WIDTH:
+        if self.ball.left < 0:
+            self.score[1] = self.score[1] + 1
+            self.restat_ball()
+
+        if self.ball.right > GAME_WIDTH:
+            self.score[0] = self.score[0] + 1
             self.restat_ball()
 
     def restat_ball(self):
@@ -90,6 +98,11 @@ class App:
 
     def on_render(self):
         self.display_surf.fill(BACKGROUND_COLOUR)
+        score_string = "".join((str(self.score[0]), ":", str(self.score[1])))
+        score_text = self.text_obj.render(score_string, True, SCORE_COLOUR, BACKGROUND_COLOUR)
+        score_rectangle = score_text.get_rect()
+        score_rectangle.center = (GAME_WIDTH//2, GAME_HEIGHT//2)
+        self.display_surf.blit(score_text, score_rectangle)
         pygame.draw.rect(self.display_surf, LEFT_GUY_COLOUR, self.left_paddle)
         pygame.draw.rect(self.display_surf, RIGHT_GUY_COLOUR, self.right_paddle)
         pygame.draw.rect(self.display_surf, BALL_COLOUR, self.ball)
