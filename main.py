@@ -4,7 +4,7 @@ from config import *
 from human_controls import HumanPlayer1, HumanPlayer2
 from hardcoded_ai import HardcodedAi
 import random
-import math
+import math as maths
 
 
 class App:
@@ -30,15 +30,22 @@ class App:
         return True
 
     def randomise_ball_vel(self):
-        ball_direction = (random.random() * (math.pi/2)) - math.pi/4
+        ball_direction = (random.random() * (maths.pi/2)) - maths.pi/4
         if random.randint(0, 1) == 1:
-            ball_direction = ball_direction + math.pi
-        self.ball_velocity = [math.cos(ball_direction) * BALL_SPEED, math.sin(ball_direction) * BALL_SPEED]
+            ball_direction = ball_direction + maths.pi
+        self.ball_velocity = [maths.cos(ball_direction) * BALL_SPEED, maths.sin(ball_direction) * BALL_SPEED]
 
     def ball_paddle_redirect(self, paddle: pygame.Rect):
         collision_vet = [self.ball.center[0] - paddle.center[0], self.ball.center[1] - paddle.center[1]]
-        collision_angle = math.atan2(collision_vet[1], collision_vet[0])
-        self.ball_velocity = [math.cos(collision_angle) * BALL_SPEED, math.sin(collision_angle) * BALL_SPEED]
+        collision_angle = maths.atan2(collision_vet[1], collision_vet[0])
+
+        if abs((maths.pi / 2) - abs(collision_angle)) < BALL_MIN_BOUNCE:
+            if collision_angle < 0:
+                collision_angle = collision_angle + BALL_MIN_BOUNCE
+            else:
+                collision_angle = collision_angle - BALL_MIN_BOUNCE
+
+        self.ball_velocity = [maths.ceil(maths.cos(collision_angle) * BALL_SPEED), maths.ceil(maths.sin(collision_angle) * BALL_SPEED)]
 
     def on_event(self, event):
         if event.type == QUIT:
@@ -85,13 +92,13 @@ class App:
 
         if self.ball.left < 0:
             self.score[1] = self.score[1] + 1
-            self.restat_ball()
+            self.restart_ball()
 
         if self.ball.right > GAME_WIDTH:
             self.score[0] = self.score[0] + 1
-            self.restat_ball()
+            self.restart_ball()
 
-    def restat_ball(self):
+    def restart_ball(self):
         self.ball.centerx = GAME_WIDTH/2
         self.ball.centery = GAME_HEIGHT/2
         self.randomise_ball_vel()
@@ -121,6 +128,9 @@ class App:
             self.on_loop()
             self.on_render()
         self.on_cleanup()
+
+    def step(self):
+        self.on_loop()
 
 
 if __name__ == "__main__":
